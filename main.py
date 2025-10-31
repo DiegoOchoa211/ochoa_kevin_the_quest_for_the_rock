@@ -4,6 +4,8 @@
 # input
 # update
 # draw
+
+#yay i can use github from VS Code!
 import math
 import random
 import sys
