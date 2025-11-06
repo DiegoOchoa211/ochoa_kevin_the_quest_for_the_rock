@@ -38,9 +38,20 @@ class Player(Sprite):
         self.cd = Cooldown(1000)
         self.dir = vec(0,0)
         self.walking = False
+        self.jump_power = 100
         self.jumping = False
         self.current_frame = 0
         self.last_update = 0
+    def jump(self):
+        #checks if something is one pixel below for jump
+        self.rect.y += 1
+        hits = pg.sprite.spritecollide(self, self.game.all_walls, False)
+        self.rect.y += -1
+        if hits: 
+            self.vel.y = -self.jump_power
+
+
+
     #def load_images(self):
         #self.standing_frames = [self.spritesheet.get_image(0, 0, 32, 32),
                                 #self.spritesheet.get_image(0, 32, 32, 32)]
@@ -50,22 +61,24 @@ class Player(Sprite):
         # self.walk_frames_l
         # pg.transform.flip
 
-    def animate(self):
-        now = pg.time.get_ticks()
-        if not self.jumping and not self.walking:
-            if now - self.last_update > 350:
-                print(now)
-                self.last_update = now
-                self.current_frame = (self.current_frame + 1) % len(self.standing_frames)
-                bottom = self.rect.bottom
-                self.image = self.standing_frames[self.current_frame]
-                self.rect = self.image.get_rect()
-                self.rect.bottom = bottom
+    #def animate(self):
+        #now = pg.time.get_ticks()
+        #if not self.jumping and not self.walking:
+            #if now - self.last_update > 350:
+                #print(now)
+                #self.last_update = now
+                #self.current_frame = (self.current_frame + 1) % len(self.standing_frames)
+                #bottom = self.rect.bottom
+                #self.image = self.standing_frames[self.current_frame]
+                ##self.rect = self.image.get_rect()
+                #self.rect.bottom = bottom
     def get_keys(self):
         ######################## mr cozort made a mistake :( #############
-        self.vel = vec(0,0)
+        self.vel = vec(0,GRAVITY)
         keys = pg.key.get_pressed()
         if keys[pg.K_SPACE]:
+            self.jump
+        if keys[pg.K_e]:
             print(self.rect.x)
             p = Projectile(self.game, self.rect.x, self.rect.y, self.dir)
         if keys[pg.K_w]:
@@ -150,7 +163,7 @@ class Player(Sprite):
 
     def update(self):
         self.get_keys()
-        self.animate()
+        #self.animate()
         self.pos += self.vel
         self.rect.x = self.pos.x
         self.collide_with_walls('x')

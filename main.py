@@ -35,7 +35,12 @@ class Game:
       # loads image into memory when a new game is created and load_data is called
       self.player_img = pg.image.load(path.join(self.img_folder, 'kevin.png')).convert_alpha()
       self.player_img_inv = pg.image.load(path.join(self.img_folder, 'kevin.png')).convert_alpha()
+      self.bg_img = pg.image.load(path.join(self.img_folder, 'backround.png')).convert_alpha()
+      self.bg_img = pg.transform.scale(self.bg_img, (WIDTH, HEIGHT))
+      
 
+      #self.bg_img = pg.image.load(path.join(self.img_folder, 'terrain.png')).convert_alpha()
+      #self.bg_img = pg.transform.scale(self.bg_img, (WIDTH, HEIGHT))
    def new(self):
       # the sprite Group allows us to upate anwd draw sprite in grouped batches
       self.load_data()
@@ -97,6 +102,7 @@ class Game:
         text_rect = text_surface.get_rect()
         text_rect.midtop = (x,y)
         surface.blit(text_surface, text_rect)
+        self.screen.blit(self.bg_img, (0,0))
    def draw(self):
       self.screen.fill(WHITE)
       self.draw_text(self.screen, str(self.player.health), 24, BLACK, 100, 100)
@@ -104,6 +110,7 @@ class Game:
       self.draw_text(self.screen, str(self.time), 24, BLACK, 500, 100)
       self.all_sprites.draw(self.screen)
       pg.display.flip()
+      
 
 
 if __name__ == "__main__":
