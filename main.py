@@ -5,9 +5,8 @@
 # update
 # draw
 
-#yay i can use github from VS Code!
 import math
-import random
+import random 
 import sys
 import pygame as pg
 from settings import *
@@ -34,7 +33,9 @@ class Game:
       self.map = Map(path.join(self.game_folder, 'level1.txt'))
       # loads image into memory when a new game is created and load_data is called
       self.player_img = pg.image.load(path.join(self.img_folder, 'kevin.png')).convert_alpha()
+      self.mob_img = pg.image.load(path.join(self.img_folder, 'rock_pixel_small.png')).convert_alpha()
       self.player_img_inv = pg.image.load(path.join(self.img_folder, 'kevin.png')).convert_alpha()
+      self.mob_img_inv = pg.image.load(path.join(self.img_folder, 'rock_pixel_small.png')).convert_alpha()
       self.bg_img = pg.image.load(path.join(self.img_folder, 'backround.png')).convert_alpha()
       self.bg_img = pg.transform.scale(self.bg_img, (WIDTH, HEIGHT))
       

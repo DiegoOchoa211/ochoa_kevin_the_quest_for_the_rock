@@ -22,8 +22,6 @@ class Player(Sprite):
         #self.spritesheet = Spritesheet(path.join(self.game.img_folder, "spritesheet.png"))
         #self.load_images()
         self.image = pg.Surface((32, 32))
-        
-        # self.image.fill(GREEN)
         self.image = game.player_img
         self.image.set_colorkey(BLACK)
         self.image_inv = game.player_img_inv
@@ -73,7 +71,6 @@ class Player(Sprite):
                 ##self.rect = self.image.get_rect()
                 #self.rect.bottom = bottom
     def get_keys(self):
-        ######################## mr cozort made a mistake :( #############
         self.vel = vec(0,GRAVITY)
         keys = pg.key.get_pressed()
         if keys[pg.K_SPACE]:
@@ -97,12 +94,15 @@ class Player(Sprite):
         if self.vel[0] != 0 and self.vel[1] != 0:
             self.vel *= 0.7071
     
-        
+    #def effects_trail(self):
+        #if self.effect_cd.ready():
+            #EffectTrail(self.game, self.rect.x,self.rect.y)
+    
     def collide_with_walls(self, dir):
         if dir == 'x':
             hits = pg.sprite.spritecollide(self, self.game.all_walls, False)
             if hits:
-                # print(self.pos)
+                print(self.pos)
                 if self.vel.x > 0:
                     if hits[0].state == "moveable":
                         print("i hit a moveable block...")
@@ -148,7 +148,7 @@ class Player(Sprite):
                 self.vel.y = 0
                 # hits[0].vel.x = 0
                 self.rect.y = self.pos.y
-    
+
     def collide_with_stuff(self, group, kill):
         hits = pg.sprite.spritecollide(self, group, kill)
         if hits: 
@@ -164,6 +164,7 @@ class Player(Sprite):
     def update(self):
         self.get_keys()
         #self.animate()
+        #self.effects_trail()
         self.pos += self.vel
         self.rect.x = self.pos.x
         self.collide_with_walls('x')
@@ -187,10 +188,10 @@ class Mob(Sprite):
     def __init__(self, game, x, y):
         self.game = game
         self.groups = game.all_sprites, game.all_mobs
+        self.image = self.game.mob_img
         Sprite.__init__(self, self.groups)
-        self.game = game
-        self.image = pg.Surface((32, 32))
-        self.image.fill(RED)
+       # self.image = pg.Surface((32, 32))
+        self.image.set_colorkey(BLACK)
         self.rect = self.image.get_rect()
         self.vel = vec(choice([-1,1]),choice([-1,1]))
         self.pos = vec(x,y)*TILESIZE[0]
@@ -231,7 +232,7 @@ class Mob(Sprite):
             self.vel.y = -1
             # print("I don't need to chase the player x")
         self.pos += self.vel * self.speed
-        self.rect.x = self.pos.x
+        #self.rect.x = self.pos.x
         self.collide_with_walls('x')
         self.rect.y = self.pos.y
         self.collide_with_walls('y')
@@ -261,61 +262,63 @@ class Wall(Sprite):
         self.state = state
         # print("wall created at", str(self.rect.x), str(self.rect.y))
     
+                    
     def collide_with_walls(self, dir):
-        if dir == 'x':
+         if dir == 'x':
+             hits = pg.sprite.spritecollide(self, self.game.all_walls, False)
+             if hits:
+                
+                 # print(self.pos)
+                 if self.vel.x > 0:
+                     print("a wall collided with a wall")
+                     if hits[0].state == "moveable":
+                         print("i hit a moveable block...")
+                         hits[0].pos.x += self.vel.x
+                         if len(hits) > 1:
+                             if hits[1].state == "unmoveable":
+                                 self.pos.x = hits[1].rect.left - self.rect.width
+                     else:
+                         self.pos.x = hits[0].rect.left - self.rect.width
+                        
+                 if self.vel.x < 0:
+                     if hits[0].state == "moveable":
+                         print("i hit a moveable block...")
+                         hits[0].pos.x += self.vel.x
+                         if len(hits) > 1:
+                             if hits[1].state == "unmoveable":
+                                 self.pos.x = hits[1].rect.right
+                     else:
+                         self.pos.x = hits[0].rect.right
+                 self.vel.x = 0
+                 self.rect.x = self.pos.x
+         if dir == 'y':
             hits = pg.sprite.spritecollide(self, self.game.all_walls, False)
             if hits:
+                 # print(self.pos)
                 
-                # print(self.pos)
-                if self.vel.x > 0:
-                    print("a wall collided with a wall")
-                    if hits[0].state == "moveable":
-                        print("i hit a moveable block...")
-                        hits[0].pos.x += self.vel.x
-                        if len(hits) > 1:
-                            if hits[1].state == "unmoveable":
-                                self.pos.x = hits[1].rect.left - self.rect.width
-                    else:
-                        self.pos.x = hits[0].rect.left - self.rect.width
+                 if self.vel.y > 0:
+                     print('wall y collide down')
+                     if hits[0].state == "moveable":
+                         print("i hit a moveable block...")
+                         hits[0].pos.y += self.vel.y
+                         if len(hits) > 1:
+                             if hits[1].state == "unmoveable":
+                                 self.pos.y = hits[1].rect.top - self.rect.height
+                     else:
+                         self.pos.y = hits[0].rect.top - self.rect.height
                         
-                if self.vel.x < 0:
-                    if hits[0].state == "moveable":
-                        print("i hit a moveable block...")
-                        hits[0].pos.x += self.vel.x
-                        if len(hits) > 1:
-                            if hits[1].state == "unmoveable":
-                                self.pos.x = hits[1].rect.right
-                    else:
-                        self.pos.x = hits[0].rect.right
-                self.vel.x = 0
-                self.rect.x = self.pos.x
-        if dir == 'y':
-            hits = pg.sprite.spritecollide(self, self.game.all_walls, False)
-            if hits:
-                # print(self.pos)
-                
-                if self.vel.y > 0:
-                    print('wall y collide down')
-                    if hits[0].state == "moveable":
-                        print("i hit a moveable block...")
-                        hits[0].pos.y += self.vel.y
-                        if len(hits) > 1:
-                            if hits[1].state == "unmoveable":
-                                self.pos.y = hits[1].rect.top - self.rect.height
-                    else:
-                        self.pos.y = hits[0].rect.top - self.rect.height
-                        
-                if self.vel.y < 0:
-                    if hits[0].state == "moveable":
-                        print("i hit a moveable block...")
-                        hits[0].pos.y += self.vel.y
-                        if len(hits) > 1:
-                            if hits[1].state == "unmovable":
-                                self.pos.y = hits[1].rect.bottom
-                    else:
-                        self.pos.y = hits[0].rect.bottom
-                self.vel.y = 0
-                self.rect.y = self.pos.y
+                 if self.vel.y < 0:
+                     if hits[0].state == "moveable":
+                         print("i hit a moveable block...")
+                         hits[0].pos.y += self.vel.y
+                         if len(hits) > 1:
+                             if hits[1].state == "unmovable":
+                                 self.pos.y = hits[1].rect.bottom
+                     else:
+                         self.pos.y = hits[0].rect.bottom
+                 self.vel.y = 0
+                 self.rect.y = self.pos.y
+ 
     def update(self):
         # wall
         self.pos += self.vel
