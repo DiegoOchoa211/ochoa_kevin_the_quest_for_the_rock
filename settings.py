@@ -10,7 +10,7 @@ YELLOW = (255, 255, 0)
 WHITE = (255,255,255)
 BLACK = (0,0,0)
 GREY = (150,150,150)
-FPS = 1000000
+FPS = 30
 SCORE = 0
 # using a tuple to define a tile size
 

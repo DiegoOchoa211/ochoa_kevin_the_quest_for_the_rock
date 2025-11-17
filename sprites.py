@@ -29,11 +29,13 @@ class Player(Sprite):
         # self.rect.x = x * TILESIZE[0]
         # self.rect.y = y * TILESIZE[1]
         self.vel = vec(0,0)
+        self.dir = vec(1,0)
         self.pos = vec(x,y) * TILESIZE[0]
         self.speed = 250
         self.health = 100
         self.coins = 0
         self.cd = Cooldown(1000)
+        self.attack_cd = Cooldown(1000)  
         self.dir = vec(0,0)
         self.walking = False
         self.jump_power = 100
@@ -75,9 +77,14 @@ class Player(Sprite):
         keys = pg.key.get_pressed()
         if keys[pg.K_SPACE]:
             self.jump
-        if keys[pg.K_e]:
+
+        if keys[pg.K_k]:
+            if self.attack_cd.ready():
+                Attack(self.game, self.rect.x, self.rect.y, self.dir)
+                self.attack_cd.start()
+        if keys[pg.K_k]:
             print(self.rect.x)
-            p = Projectile(self.game, self.rect.x, self.rect.y, self.dir)
+            p = Attack(self.game, self.rect.x, self.rect.y, self.dir)
         if keys[pg.K_w]:
             self.vel.y = -self.speed*self.game.dt
             self.dir = vec(0,-1)
@@ -232,7 +239,7 @@ class Mob(Sprite):
             self.vel.y = -1
             # print("I don't need to chase the player x")
         self.pos += self.vel * self.speed
-        #self.rect.x = self.pos.x
+        self.rect.x = self.pos.x
         self.collide_with_walls('x')
         self.rect.y = self.pos.y
         self.collide_with_walls('y')
@@ -348,5 +355,40 @@ class Projectile(Sprite):
         self.rect.x = self.pos.x
         self.rect.y = self.pos.y
         hits = pg.sprite.spritecollide(self, self.game.all_walls, True)
+        if hits:
+            self.kill()
+class Attack(pg.sprite.Sprite):
+    def __init__(self, game, x, y, dir):
+        self.game = game
+        self.groups = game.all_sprites
+        pg.sprite.Sprite.__init__(self, self.groups)
+
+        # small rectangle to represent the melee attack
+        self.image = pg.Surface((16, 16))
+        self.image.fill(RED)
+        self.rect = self.image.get_rect()
+        self.pos = vec(x, y)
+        self.rect.topleft = self.pos
+
+        # attack direction
+        if dir.length() == 0:
+            self.vel = vec(1, 0)  # default right
+        else:
+            self.vel = dir * 10
+
+        self.lifetime = 200  # milliseconds
+        self.spawn_time = pg.time.get_ticks()
+
+    def update(self):
+        # move attack
+        self.pos += self.vel
+        self.rect.topleft = self.pos
+
+        # remove attack after lifetime
+        if pg.time.get_ticks() - self.spawn_time > self.lifetime:
+            self.kill()
+
+        # check collision with mobs
+        hits = pg.sprite.spritecollide(self, self.game.all_mobs, True)
         if hits:
             self.kill()
