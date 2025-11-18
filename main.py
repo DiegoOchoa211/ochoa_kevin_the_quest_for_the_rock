@@ -21,7 +21,7 @@ class Game:
       pg.init()
       self.clock = pg.time.Clock()
       self.screen = pg.display.set_mode((WIDTH, HEIGHT))
-      pg.display.set_caption("Diego Ochoa's awesome game!!!!!")
+      pg.display.set_caption("Kevin: The Quest for the Rock")
       self.playing = True
    
    # sets up a game folder directory path using the current folder containing THIS file
@@ -65,6 +65,33 @@ class Game:
                self.player = Player(self, col, row)
             elif tile == 'M':
                Mob(self, col, row)
+
+
+   def load_new_map(self, filename):
+    # Clear old sprites
+    self.all_sprites.empty()
+    self.all_walls.empty()
+    self.all_mobs.empty()
+    self.all_coins.empty()
+    self.all_projectiles.empty()
+
+    # Load the new map file
+    self.map = Map(path.join(self.game_folder, filename))
+
+    # Rebuild world from the new tilemap
+    for row, tiles in enumerate(self.map.data):
+        for col, tile in enumerate(tiles):
+            if tile == '1':
+                Wall(self, col, row, "unmoveable")
+            elif tile == '2':
+                Wall(self, col, row, "moveable")
+            elif tile == 'C':
+                Coin(self, col, row)
+            elif tile == 'P':
+                self.player = Player(self, col, row)
+            elif tile == 'M':
+                Mob(self, col, row)
+
      
      
    def run(self):

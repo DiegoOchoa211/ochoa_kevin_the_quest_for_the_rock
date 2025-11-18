@@ -86,15 +86,23 @@ class Player(Sprite):
             print(self.rect.x)
             p = Attack(self.game, self.rect.x, self.rect.y, self.dir)
         if keys[pg.K_w]:
+            #for sprite in self.game.all_sprites:
+               # sprite.rect.x -= 25
             self.vel.y = -self.speed*self.game.dt
             self.dir = vec(0,-1)
         if keys[pg.K_a]:
+            #for sprite in self.game.all_sprites:
+                #sprite.rect.x += 25
             self.vel.x = -self.speed*self.game.dt
             self.dir = vec(-1,0)
         if keys[pg.K_s]:
+            #for sprite in self.game.all_sprites:
+                #sprite.rect.y -= 25
             self.vel.y = self.speed*self.game.dt
             self.dir = vec(0,1)
         if keys[pg.K_d]:
+           # for sprite in self.game.all_sprites:
+               # sprite.rect.y += 25
             self.vel.x = self.speed*self.game.dt
             self.dir = vec(1,0)
         # accounting for diagonal
@@ -179,6 +187,40 @@ class Player(Sprite):
         self.collide_with_walls('y')
         self.collide_with_stuff(self.game.all_mobs, False)
         self.collide_with_stuff(self.game.all_coins, True)
+
+          # Check if player is off-screen to switch map
+        if self.rect.x < 0:
+            self.rect.x = WIDTH - TILE_SIZE
+            load_tilemap(level2.txt)
+
+    #switches map
+        if self.rect.left < 0:
+            self.game.load_new_map("level2.txt")
+            self.rect.right = WIDTH
+
+        elif self.rect.right > WIDTH:
+            self.game.load_new_map("level2.txt")
+            self.rect.left = 0
+
+        elif self.rect.top < 0:
+            self.game.load_new_map("level2.txt")
+            self.rect.bottom = HEIGHT
+
+        elif self.rect.bottom > HEIGHT:
+            self.game.load_new_map("level2.txt")
+            self.rect.top = 0
+
+
+# Function to load and render a tilemap
+def load_tilemap(tilemap):
+    screen.fill((0, 0, 0))  # Fill screen with black (background)
+    for row in range(len(tilemap)):
+        for col in range(len(tilemap[row])):
+            tile = tilemap[row][col]
+            if tile == 1:
+                pg.draw.rect(screen, (255, 255, 255), (col * TILE_SIZE, row * TILE_SIZE, TILE_SIZE, TILE_SIZE))
+
+
         # # print(self.cd.ready())
         # if not self.cd.ready():
         #     self.image = self.game.player_img_inv
@@ -265,7 +307,7 @@ class Wall(Sprite):
         self.image.fill(GREY)
         self.rect = self.image.get_rect()
         self.vel = vec(0,0)
-        self.pos = vec(x,y) * TILESIZE[0]
+        self.pos = vec(x,y) * TILESIZE[0] 
         self.state = state
         # print("wall created at", str(self.rect.x), str(self.rect.y))
     
