@@ -193,7 +193,7 @@ class Player(Sprite):
             self.rect.x = WIDTH - TILE_SIZE
             load_tilemap(level2.txt)
 
-    #switches map
+    #Map Switch
         if self.rect.left < 0:
             self.game.load_new_map("level2.txt")
             self.rect.right = WIDTH

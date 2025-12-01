@@ -19,6 +19,7 @@ from math import floor
 class Game:
    def __init__(self):
       pg.init()
+      pg.mixer.init()
       self.clock = pg.time.Clock()
       self.screen = pg.display.set_mode((WIDTH, HEIGHT))
       pg.display.set_caption("Kevin: The Quest for the Rock")
@@ -30,6 +31,8 @@ class Game:
    def load_data(self):
       self.game_folder = path.dirname(__file__)
       self.img_folder = path.join(self.game_folder, 'img')
+      self.snd_folder = path.join(self.game_folder, 'sound')
+                        #self.jump_sounds = pg.mixer.Sound(path.join(self.snd_folder, 'Jump33.wav'))
       self.map = Map(path.join(self.game_folder, 'level1.txt'))
       # loads image into memory when a new game is created and load_data is called
       self.player_img = pg.image.load(path.join(self.img_folder, 'kevin.png')).convert_alpha()
@@ -138,6 +141,16 @@ class Game:
       self.draw_text(self.screen, str(self.time), 24, BLACK, 500, 100)
       self.all_sprites.draw(self.screen)
       pg.display.flip()
+
+   #def wait_for_key(self):
+     # waiting = True
+      #while waiting:
+         #self.clock.tick(FPS)
+         #for event in pg.event.get()
+            #if event.type == pg.QUIT()
+              # waiting = False
+              # self.running = False
+          #  if event.type
       
 
 
