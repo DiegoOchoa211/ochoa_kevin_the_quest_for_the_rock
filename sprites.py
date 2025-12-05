@@ -188,12 +188,8 @@ class Player(Sprite):
         self.collide_with_stuff(self.game.all_mobs, False)
         self.collide_with_stuff(self.game.all_coins, True)
 
-          # Check if player is off-screen to switch map
-        if self.rect.x < 0:
-            self.rect.x = WIDTH - TILE_SIZE
-            load_tilemap(level2.txt)
-
-    #Map Switch
+    #Check if player is off-screen to switch map
+    #Map Switch - assisted by AI
         if self.rect.left < 0:
             self.game.load_new_map("level2.txt")
             self.rect.right = WIDTH

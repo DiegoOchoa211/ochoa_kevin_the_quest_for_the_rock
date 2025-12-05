@@ -1,5 +1,11 @@
 # Created by Diego Ochoa with the help of ChatGPT
-## import necessary modules
+#Design Goals/Rules
+#2 Levels so far
+#No Boss yet
+#transition from starting room to level 1
+# goal of game is get to final level and beat the boss
+
+# import necessary modules
 # core game loop
 # input
 # update
