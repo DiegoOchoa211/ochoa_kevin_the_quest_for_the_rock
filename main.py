@@ -30,6 +30,8 @@ class Game:
       self.screen = pg.display.set_mode((WIDTH, HEIGHT))
       pg.display.set_caption("Kevin: The Quest for the Rock")
       self.playing = True
+      self.enemies_defeated = 0 
+
    
    # sets up a game folder directory path using the current folder containing THIS file
    # give the Game class a map property which uses the Map class to parse the level1.txt file
@@ -77,12 +79,15 @@ class Game:
 
 
    def load_new_map(self, filename):
+    player_coins = self.player.coins if self.player else 0
+
     # Clear old sprites
     self.all_sprites.empty()
     self.all_walls.empty()
     self.all_mobs.empty()
     self.all_coins.empty()
     self.all_projectiles.empty()
+    self.player = None
 
     # Load the new map file
     self.map = Map(path.join(self.game_folder, filename))
@@ -97,7 +102,12 @@ class Game:
             elif tile == 'C':
                 Coin(self, col, row)
             elif tile == 'P':
-                self.player = Player(self, col, row)
+               self.player = Player(self, col, row)
+               self.player.coins = player_coins
+               self.player.pos = vec(col, row) * TILESIZE[0]
+               self.player.rect.topleft = self.player.pos
+
+               
             elif tile == 'M':
                 Mob(self, col, row)
 
@@ -126,10 +136,10 @@ class Game:
       seconds = pg.time.get_ticks()//1000
       countdown = 10
       self.time = countdown - seconds
-      if len(self.all_coins) == 0:
-         for i in range(2,5):
-            Coin(self, randint(1, 20), randint(1,20))
-         print("I'm BROKE!")
+      # if len(self.all_coins) == 0:
+      #    for i in range(2,5):
+      #       Coin(self, randint(1, 20), randint(1,20))
+      #    print("I'm BROKE!")
 
 
    def draw_text(self, surface, text, size, color, x, y):
@@ -139,13 +149,35 @@ class Game:
         text_rect = text_surface.get_rect()
         text_rect.midtop = (x,y)
         surface.blit(text_surface, text_rect)
-        self.screen.blit(self.bg_img, (0,0))
+        #self.screen.blit(self.bg_img, (0,0))
+   
+   def draw_health_bar(self, x, y, width, height, health, max_health):
+   # creates bar at bottom of screen for health/coins/mobs
+    pg.draw.rect(self.screen, GREY, (x, y, width, height))
+    ratio = max(0, health / max_health)
+    health_width = int(width * ratio)
+    # Red health bar
+    pg.draw.rect(self.screen, RED, (x, y, health_width, height))
+
+   
+   
    def draw(self):
-      self.screen.fill(WHITE)
-      self.draw_text(self.screen, str(self.player.health), 24, BLACK, 100, 100)
-      self.draw_text(self.screen, str(self.player.coins), 24, BLACK, 400, 100)
+      self.screen.blit(self.bg_img, (0, 0))
+      #self.screen.fill(WHITE)
       self.draw_text(self.screen, str(self.time), 24, BLACK, 500, 100)
       self.all_sprites.draw(self.screen)
+
+      #bottom UI bar
+      bar_height = 40
+      bar_y = HEIGHT - bar_height
+      pg.draw.rect(self.screen, DARKGREY, (0, bar_y, WIDTH, bar_height))
+      #draws health bar
+      self.draw_health_bar(20, bar_y +5, 200, 30, self.player.health, 100)
+      #coin counter
+      self.draw_text(self.screen, f"Coins: {self.player.coins}",24,BLACK,260, bar_y + 10)
+      #mob kill counter
+      self.draw_text(self.screen, f"Mobs defeated: {self.enemies_defeated}",24,BLACK,450,bar_y + 10)
+
       pg.display.flip()
 
    #def wait_for_key(self):

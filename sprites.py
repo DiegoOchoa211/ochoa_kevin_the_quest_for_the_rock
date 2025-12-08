@@ -30,7 +30,9 @@ class Player(Sprite):
         # self.rect.y = y * TILESIZE[1]
         self.vel = vec(0,0)
         self.dir = vec(1,0)
-        self.pos = vec(x,y) * TILESIZE[0]
+        #self.pos = vec(x,y) * TILESIZE[0]
+        self.pos = vec(x*TILESIZE[0], y*TILESIZE[1])
+        self.rect.topleft = self.pos
         self.speed = 250
         self.health = 100
         self.coins = 0
@@ -45,10 +47,10 @@ class Player(Sprite):
     def jump(self):
         #checks if something is one pixel below for jump
         self.rect.y += 1
-        hits = pg.sprite.spritecollide(self, self.game.all_walls, False)
-        self.rect.y += -1
-        if hits: 
-            self.vel.y = -self.jump_power
+        hits = pg.sprite.spritecollide(self, self.game.all_mobs, True)
+        if hits:
+            self.game.enemies_defeated += len(hits)  # <-- Add this line
+            self.kill()
 
 
 
@@ -77,14 +79,11 @@ class Player(Sprite):
         keys = pg.key.get_pressed()
         if keys[pg.K_SPACE]:
             self.jump
-
         if keys[pg.K_k]:
             if self.attack_cd.ready():
-                Attack(self.game, self.rect.x, self.rect.y, self.dir)
+                attack_dir = self.dir if self.dir.length() != 0 else vec(1,0)
+                Attack(self.game, self.rect.centerx, self.rect.centery, attack_dir)
                 self.attack_cd.start()
-        if keys[pg.K_k]:
-            print(self.rect.x)
-            p = Attack(self.game, self.rect.x, self.rect.y, self.dir)
         if keys[pg.K_w]:
             #for sprite in self.game.all_sprites:
                # sprite.rect.x -= 25
@@ -92,17 +91,14 @@ class Player(Sprite):
             self.dir = vec(0,-1)
         if keys[pg.K_a]:
             #for sprite in self.game.all_sprites:
-                #sprite.rect.x += 25
             self.vel.x = -self.speed*self.game.dt
             self.dir = vec(-1,0)
         if keys[pg.K_s]:
             #for sprite in self.game.all_sprites:
-                #sprite.rect.y -= 25
             self.vel.y = self.speed*self.game.dt
             self.dir = vec(0,1)
         if keys[pg.K_d]:
            # for sprite in self.game.all_sprites:
-               # sprite.rect.y += 25
             self.vel.x = self.speed*self.game.dt
             self.dir = vec(1,0)
         # accounting for diagonal
@@ -429,4 +425,5 @@ class Attack(pg.sprite.Sprite):
         # check collision with mobs
         hits = pg.sprite.spritecollide(self, self.game.all_mobs, True)
         if hits:
+            self.game.enemies_defeated += len(hits)  # increment mob counter
             self.kill()
