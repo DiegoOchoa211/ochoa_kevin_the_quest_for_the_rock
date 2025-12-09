@@ -199,7 +199,7 @@ class Player(Sprite):
             self.rect.bottom = HEIGHT
 
         elif self.rect.bottom > HEIGHT:
-            self.game.load_new_map("level2.txt")
+            self.game.load_new_map("level3.txt")
             self.rect.top = 0
 
 

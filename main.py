@@ -31,6 +31,8 @@ class Game:
       pg.display.set_caption("Kevin: The Quest for the Rock")
       self.playing = True
       self.enemies_defeated = 0 
+      self.levels = ["level1.txt", "level2.txt", "level3.txt", "level5.txt"]
+      self.current_level_index = 0
 
    
    # sets up a game folder directory path using the current folder containing THIS file
@@ -41,7 +43,8 @@ class Game:
       self.img_folder = path.join(self.game_folder, 'img')
       self.snd_folder = path.join(self.game_folder, 'sound')
                         #self.jump_sounds = pg.mixer.Sound(path.join(self.snd_folder, 'Jump33.wav'))
-      self.map = Map(path.join(self.game_folder, 'level1.txt'))
+      #self.map = Map(path.join(self.game_folder, 'level1.txt'))
+      self.map = Map(path.join(self.game_folder, self.levels[self.current_level_index]))
       # loads image into memory when a new game is created and load_data is called
       self.player_img = pg.image.load(path.join(self.img_folder, 'kevin.png')).convert_alpha()
       self.mob_img = pg.image.load(path.join(self.img_folder, 'rock_pixel_small.png')).convert_alpha()
@@ -49,8 +52,7 @@ class Game:
       self.mob_img_inv = pg.image.load(path.join(self.img_folder, 'rock_pixel_small.png')).convert_alpha()
       self.bg_img = pg.image.load(path.join(self.img_folder, 'backround.png')).convert_alpha()
       self.bg_img = pg.transform.scale(self.bg_img, (WIDTH, HEIGHT))
-      
-
+   
       #self.bg_img = pg.image.load(path.join(self.img_folder, 'terrain.png')).convert_alpha()
       #self.bg_img = pg.transform.scale(self.bg_img, (WIDTH, HEIGHT))
    def new(self):
@@ -140,6 +142,12 @@ class Game:
       #    for i in range(2,5):
       #       Coin(self, randint(1, 20), randint(1,20))
       #    print("I'm BROKE!")
+      if self.player.pos.x > WIDTH - TILESIZE[0]:   #crossing right side of screen
+         self.current_level_index += 1
+         if self.current_level_index < len(self.levels):
+            self.load_new_map(self.levels[self.current_level_index])
+         else:
+            self.playing = False  #no more levels
 
 
    def draw_text(self, surface, text, size, color, x, y):
