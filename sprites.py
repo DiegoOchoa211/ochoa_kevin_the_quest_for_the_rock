@@ -408,7 +408,6 @@ class Wall(Sprite):
         self.rect.y = self.pos.y
         self.collide_with_walls('y')
 
-
 class Projectile(Sprite):
     def __init__(self, game, x, y, dir):
         self.game = game
@@ -428,47 +427,55 @@ class Projectile(Sprite):
         self.pos += self.vel * self.speed
         self.rect.x = self.pos.x
         self.rect.y = self.pos.y
-        hits = pg.sprite.spritecollide(self, self.game.all_walls, True)
+        hits = pg.sprite.spritecollide(self, self.game.all_walls, False)
         if hits:
             self.kill()
+ 
 class Attack(pg.sprite.Sprite):
     def __init__(self, game, x, y, dir):
+        super().__init__(game.all_sprites)
         self.game = game
-        self.groups = game.all_sprites
-        pg.sprite.Sprite.__init__(self, self.groups)
-
-        # small rectangle to represent the melee attack
+        # small rectangle for the melee attack
         self.image = pg.Surface((16, 16))
         self.image.fill(RED)
-        self.rect = self.image.get_rect()
-        self.pos = vec(x, y)
-        self.rect.topleft = self.pos
-
-        # attack direction
+        self.rect = self.image.get_rect(center=(x, y))
+        # direction
         if dir.length() == 0:
-            self.vel = vec(1, 0)  # default right
-        else:
-            self.vel = dir * 10
+            dir = vec(1, 0)
+        self.dir = dir.normalize()
+        self.speed = 400  # pixels per second for attack movement
+        self.pos = vec(x, y)
+        self.prev_pos = self.pos.copy()
 
-        self.lifetime = 200  # milliseconds
+        # lifetime in milliseconds
+        self.lifetime = 500
         self.spawn_time = pg.time.get_ticks()
 
     def update(self):
-        # move attack
-        self.pos += self.vel
-        self.rect.topleft = self.pos
+        self.prev_pos = self.pos.copy()
+        self.pos += self.dir * self.speed * self.game.dt
+        self.rect.center = self.pos
 
         # remove attack after lifetime
         if pg.time.get_ticks() - self.spawn_time > self.lifetime:
             self.kill()
+            return
 
-        # check collision with mobs
+        # collision with walls
+        for wall in self.game.all_walls:
+            wall_rect = wall.rect
+            line = (int(self.prev_pos.x), int(self.prev_pos.y), int(self.pos.x), int(self.pos.y))
+            if wall_rect.clipline(line):
+                self.kill()
+                return
+
+        # collision with mobs
         hits = pg.sprite.spritecollide(self, self.game.all_mobs, False)
         for mob in hits:
             if isinstance(mob, Boss):
-                mob.take_damage(1)     # Only subtract 1 HP
+                mob.take_damage(1)
             else:
                 mob.kill()
                 self.game.enemies_defeated += 1
             self.kill()
-            break
+            return

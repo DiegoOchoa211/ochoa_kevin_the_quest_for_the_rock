@@ -121,9 +121,6 @@ class Game:
                   self.player.pos.x = TILESIZE[0]
                   self.player.rect.x = TILESIZE[0]
 
-
-
-     
      
    def run(self):
       while self.playing == True:
