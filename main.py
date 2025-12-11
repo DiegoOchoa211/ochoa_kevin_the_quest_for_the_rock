@@ -31,7 +31,7 @@ class Game:
       pg.display.set_caption("Kevin: The Quest for the Rock")
       self.playing = True
       self.enemies_defeated = 0 
-      self.levels = ["level1.txt", "level2.txt", "level3.txt", "level5.txt"]
+      self.levels = ["level1.txt", "level2.txt", "level3.txt", "level4.txt", "level5.txt"]
       self.current_level_index = 0
 
    
@@ -82,6 +82,7 @@ class Game:
 
    def load_new_map(self, filename):
     player_coins = self.player.coins if self.player else 0
+    player_health = self.player.health if self.player else 100
 
     # Clear old sprites
     self.all_sprites.empty()
@@ -106,12 +107,21 @@ class Game:
             elif tile == 'P':
                self.player = Player(self, col, row)
                self.player.coins = player_coins
+               self.player.health = player_health
                self.player.pos = vec(col, row) * TILESIZE[0]
                self.player.rect.topleft = self.player.pos
-
-               
             elif tile == 'M':
                 Mob(self, col, row)
+            elif tile == 'B':
+               self.boss = Boss(self, col, row)
+               self.boss_alive = True
+
+            if self.player:
+               if self.player.pos.x > WIDTH - TILESIZE[0]:
+                  self.player.pos.x = TILESIZE[0]
+                  self.player.rect.x = TILESIZE[0]
+
+
 
      
      
@@ -185,6 +195,18 @@ class Game:
       self.draw_text(self.screen, f"Coins: {self.player.coins}",24,BLACK,260, bar_y + 10)
       #mob kill counter
       self.draw_text(self.screen, f"Mobs defeated: {self.enemies_defeated}",24,BLACK,450,bar_y + 10)
+
+   # Boss health bar with help from AI
+   #hasattr checks if two things exist
+      if hasattr(self, "boss_alive") and self.boss_alive:
+         bar_x = 150
+         bar_y = 20
+         bar_width = 500
+         bar_height = 25
+         pg.draw.rect(self.screen, DARKGREY, (bar_x, bar_y, bar_width, bar_height))
+         boss_ratio = self.boss.health / self.boss.max_health
+         pg.draw.rect(self.screen, RED, (bar_x, bar_y, bar_width * boss_ratio, bar_height))
+         self.draw_text(self.screen, "The Rock", 24, BLACK, bar_x + bar_width // 2, bar_y - 25)
 
       pg.display.flip()
 

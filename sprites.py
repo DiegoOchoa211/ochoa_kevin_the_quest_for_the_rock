@@ -36,6 +36,7 @@ class Player(Sprite):
         self.speed = 250
         self.health = 100
         self.coins = 0
+        self.hit_cooldown = Cooldown(1000)
         self.cd = Cooldown(1000)
         self.attack_cd = Cooldown(1000)  
         self.dir = vec(0,0)
@@ -213,7 +214,7 @@ def load_tilemap(tilemap):
                 pg.draw.rect(screen, (255, 255, 255), (col * TILE_SIZE, row * TILE_SIZE, TILE_SIZE, TILE_SIZE))
 
 
-        # # print(self.cd.ready())
+        # # print(self..ready())
         # if not self.cd.ready():
         #     self.image = self.game.player_img_inv
         #     # self.rect = self.image_inv.get_rect()
@@ -277,6 +278,45 @@ class Mob(Sprite):
         self.collide_with_walls('x')
         self.rect.y = self.pos.y
         self.collide_with_walls('y')
+
+class Boss(Sprite):
+    def __init__(self, game, x, y):
+        self.groups = game.all_sprites, game.all_mobs
+        Sprite.__init__(self, self.groups)
+        self.game = game
+        self.image = pg.transform.scale(game.mob_img, (80, 80))  #bigger than mob
+        self.rect = self.image.get_rect()
+        self.pos = vec(x * TILESIZE[0], y * TILESIZE[1])
+        self.rect.topleft = self.pos
+
+        self.health = 10  # Boss needs 10 hits
+        self.max_health = 10
+        self.speed = 75
+
+    def update(self):
+        # same tracking as mobs
+        direction = self.game.player.pos - self.pos
+        if direction.length() > 1:
+            direction = direction.normalize()
+            self.pos += direction * self.speed * self.game.dt
+            self.rect.center = self.pos
+    
+        hits = pg.sprite.spritecollide(self, pg.sprite.GroupSingle(self.game.player), False)
+        if hits:
+            if self.game.player.hit_cooldown.ready():
+                self.game.player.health -= 10
+                self.game.player.hit_cooldown.start()
+
+
+    def take_damage(self, amount):
+        self.health -= amount
+        if self.health <= 0:
+            self.kill()
+            self.game.enemies_defeated += 1
+            self.game.boss_alive = False
+
+
+
 
 class Coin(Sprite):
     def __init__(self, game, x, y):
@@ -423,7 +463,12 @@ class Attack(pg.sprite.Sprite):
             self.kill()
 
         # check collision with mobs
-        hits = pg.sprite.spritecollide(self, self.game.all_mobs, True)
-        if hits:
-            self.game.enemies_defeated += len(hits)  # increment mob counter
+        hits = pg.sprite.spritecollide(self, self.game.all_mobs, False)
+        for mob in hits:
+            if isinstance(mob, Boss):
+                mob.take_damage(1)     # Only subtract 1 HP
+            else:
+                mob.kill()
+                self.game.enemies_defeated += 1
             self.kill()
+            break
