@@ -185,6 +185,18 @@ class Player(Sprite):
         self.collide_with_stuff(self.game.all_mobs, False)
         self.collide_with_stuff(self.game.all_coins, True)
 
+         
+        #resets to the first level on death
+        if self.health <= 0:
+            self.game.show_death_screen()
+            self.game.reset_to_start()
+            return
+
+        if hasattr(self, "boss_alive") and not self.boss_alive:
+            self.show_win_screen() #checks if boss is alive
+            return
+
+
     #Check if player is off-screen to switch map
     #Map Switch - assisted by AI
         if self.rect.left < 0:
@@ -314,6 +326,9 @@ class Boss(Sprite):
             self.kill()
             self.game.enemies_defeated += 1
             self.game.boss_alive = False
+            self.game.show_win_screen()
+            self.game.reset_to_start()
+
 
 
 

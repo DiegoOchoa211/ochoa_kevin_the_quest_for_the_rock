@@ -1,10 +1,10 @@
 # Created by Diego Ochoa with the help of ChatGPT
 #Design Goals/Rules
-#2 Levels so far
-#No Boss yet
-#transition from starting room to level 1
+#4 Levels so far
+#The Rock Boss at the end
+#transitions for all rooms
 # goal of game is get to final level and beat the boss
-
+# no start/pause/end screen yet
 # import necessary modules
 # core game loop
 # input
@@ -120,8 +120,60 @@ class Game:
                if self.player.pos.x > WIDTH - TILESIZE[0]:
                   self.player.pos.x = TILESIZE[0]
                   self.player.rect.x = TILESIZE[0]
+      
+   def show_start_screen(self):
+    waiting = True
+    self.screen.fill(GREY)
+    self.draw_text(self.screen, "Kevin: The Quest for the Rock", 60, BLACK, WIDTH//2, HEIGHT//3)
+    self.draw_text(self.screen, "Created by Diego Ochoa", 32, BLACK, WIDTH//2, HEIGHT//3 + 80)
+    self.draw_text(self.screen, "Click to Start", 40, BLACK, WIDTH//2, HEIGHT//2 + 100)
+    pg.display.flip()
 
-     
+    while waiting:
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                pg.quit()
+                sys.exit()
+            if event.type == pg.MOUSEBUTTONDOWN:
+                waiting = False
+
+   def show_win_screen(self):
+    waiting = True
+    self.screen.fill(GOLD)
+    self.draw_text(self.screen, "YOU WON", 80, BLACK, WIDTH//2, HEIGHT//2 - 60)
+    self.draw_text(self.screen, "Click to return to Start", 40, BLACK, WIDTH//2, HEIGHT//2 + 40)
+    pg.display.flip()
+
+    while waiting:
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                pg.quit()
+                sys.exit()
+            if event.type == pg.MOUSEBUTTONDOWN:
+                waiting = False
+
+
+   def show_death_screen(self):
+    waiting = True
+    self.screen.fill(RED)
+    self.draw_text(self.screen, "YOU DIED", 80, BLACK, WIDTH//2, HEIGHT//2 - 50)
+    self.draw_text(self.screen, "Click to Retry", 40, BLACK, WIDTH//2, HEIGHT//2 + 50)
+    pg.display.flip()
+
+    while waiting:
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                pg.quit()
+                sys.exit()
+            if event.type == pg.MOUSEBUTTONDOWN:
+                waiting = False
+
+   def reset_to_start(self):
+    self.current_level_index = 0
+    self.enemies_defeated = 0
+    self.new()
+
+
    def run(self):
       while self.playing == True:
          self.dt = self.clock.tick(FPS) / 1000
@@ -222,5 +274,6 @@ class Game:
 if __name__ == "__main__":
 #    creating an instance or instantiating the Game class
    g = Game()
+   g.show_start_screen()   
    g.new()
    g.run()
