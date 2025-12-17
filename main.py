@@ -140,7 +140,7 @@ class Game:
    def show_win_screen(self):
     waiting = True
     self.screen.fill(GOLD)
-    self.draw_text(self.screen, "YOU WON", 80, BLACK, WIDTH//2, HEIGHT//2 - 60)
+    self.draw_text(self.screen, "TITAN SLAIN", 80, BLACK, WIDTH//2, HEIGHT//2 - 60)
     self.draw_text(self.screen, "Click to return to Start", 40, BLACK, WIDTH//2, HEIGHT//2 + 40)
     pg.display.flip()
 
@@ -231,7 +231,7 @@ class Game:
    def draw(self):
       self.screen.blit(self.bg_img, (0, 0))
       #self.screen.fill(WHITE)
-      self.draw_text(self.screen, str(self.time), 24, BLACK, 500, 100)
+      #self.draw_text(self.screen, str(self.time), 24, BLACK, 500, 100)
       self.all_sprites.draw(self.screen)
 
       #bottom UI bar
@@ -255,7 +255,7 @@ class Game:
          pg.draw.rect(self.screen, DARKGREY, (bar_x, bar_y, bar_width, bar_height))
          boss_ratio = self.boss.health / self.boss.max_health
          pg.draw.rect(self.screen, RED, (bar_x, bar_y, bar_width * boss_ratio, bar_height))
-         self.draw_text(self.screen, "The Rock", 24, BLACK, bar_x + bar_width // 2, bar_y - 25)
+         self.draw_text(self.screen, "The Rock - Titan of Stone", 24, BLACK, bar_x + bar_width // 2, bar_y - 25)
 
       pg.display.flip()
 

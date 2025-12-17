@@ -316,7 +316,7 @@ class Boss(Sprite):
         hits = pg.sprite.spritecollide(self, pg.sprite.GroupSingle(self.game.player), False)
         if hits:
             if self.game.player.hit_cooldown.ready():
-                self.game.player.health -= 10
+                self.game.player.health -= 50
                 self.game.player.hit_cooldown.start()
 
 
