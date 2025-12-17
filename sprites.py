@@ -303,7 +303,7 @@ class Boss(Sprite):
 
         self.health = 10  # Boss needs 10 hits
         self.max_health = 10
-        self.speed = 75
+        self.speed = 100
 
     def update(self):
         # same tracking as mobs
@@ -316,7 +316,7 @@ class Boss(Sprite):
         hits = pg.sprite.spritecollide(self, pg.sprite.GroupSingle(self.game.player), False)
         if hits:
             if self.game.player.hit_cooldown.ready():
-                self.game.player.health -= 50
+                self.game.player.health -= 50 #mob damage
                 self.game.player.hit_cooldown.start()
 
 
@@ -328,9 +328,6 @@ class Boss(Sprite):
             self.game.boss_alive = False
             self.game.show_win_screen()
             self.game.reset_to_start()
-
-
-
 
 
 class Coin(Sprite):

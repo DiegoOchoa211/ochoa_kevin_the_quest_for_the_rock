@@ -1,10 +1,11 @@
 # Created by Diego Ochoa with the help of ChatGPT
 #Design Goals/Rules
-#4 Levels so far
-#The Rock Boss at the end
-#transitions for all rooms
-# goal of game is get to final level and beat the boss
-# no start/pause/end screen yet
+#4 Levels with Boss at the end
+#transitions for all levels
+#goal of game is get to final level and beat the boss
+#added start/pause/end screen 
+#sadly no sounds
+
 # import necessary modules
 # core game loop
 # input
@@ -31,6 +32,7 @@ class Game:
       pg.display.set_caption("Kevin: The Quest for the Rock")
       self.playing = True
       self.enemies_defeated = 0 
+      #list of the tilemaps
       self.levels = ["level1.txt", "level2.txt", "level3.txt", "level4.txt", "level5.txt"]
       self.current_level_index = 0
 
@@ -121,6 +123,7 @@ class Game:
                   self.player.pos.x = TILESIZE[0]
                   self.player.rect.x = TILESIZE[0]
       
+   #function for start screen
    def show_start_screen(self):
     waiting = True
     self.screen.fill(GREY)
@@ -152,7 +155,7 @@ class Game:
             if event.type == pg.MOUSEBUTTONDOWN:
                 waiting = False
 
-
+   #function for death screen
    def show_death_screen(self):
     waiting = True
     self.screen.fill(RED)
