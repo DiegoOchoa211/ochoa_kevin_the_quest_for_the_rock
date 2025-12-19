@@ -5,6 +5,9 @@
 #goal of game is get to final level and beat the boss
 #added start/pause/end screen 
 #sadly no sounds
+# used ChatGPT when I got stuck with errors
+# otherwise I used youtube
+# got the idea to use a list for tilemaps from this: https://www.youtube.com/watch?v=m4lOGMMziLE
 
 # import necessary modules
 # core game loop
@@ -140,6 +143,7 @@ class Game:
             if event.type == pg.MOUSEBUTTONDOWN:
                 waiting = False
 
+   # function that shows after boss is defeated
    def show_win_screen(self):
     waiting = True
     self.screen.fill(GOLD)

@@ -303,7 +303,7 @@ class Boss(Sprite):
 
         self.health = 10  # Boss needs 10 hits
         self.max_health = 10
-        self.speed = 100
+        self.speed = 100 #speed at which boss moves
 
     def update(self):
         # same tracking as mobs
